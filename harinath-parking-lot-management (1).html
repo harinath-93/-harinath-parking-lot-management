@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Harinath – Parking Lot Management System</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+:root{--navy:#0a2a66;--blue:#1d5df0;--sky:#e8f0ff;--ink:#14213d;--mut:#64748b;--line:#dbe3f1;--bg:#f5f8ff;--g:#22c55e;--r:#ef4444;--o:#f59e0b;--sh:0 8px 26px rgba(10,42,102,.10)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,-apple-system,Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+aside{background:linear-gradient(180deg,var(--navy),#0d3a8c);color:#fff;padding:22px 14px;position:sticky;top:0;height:100vh}
+.logo{font-size:1.4rem;font-weight:800;padding:0 10px 22px;display:flex;align-items:flex-start;gap:8px;line-height:1.15}.logo i{margin-top:3px}.logo small{display:block;font-size:.68rem;font-weight:600;color:#9ec0ff;letter-spacing:.3px;margin-top:3px}
+.credit{position:absolute;bottom:18px;left:0;right:0;text-align:center;font-size:.8rem;color:#9ec0ff}.credit b{color:#fff}.logo i{color:#7fb0ff}
+aside button.nav{display:flex;gap:12px;align-items:center;width:100%;padding:12px 14px;margin-bottom:6px;background:none;border:0;color:#cfe0ff;font:inherit;font-weight:600;border-radius:12px;cursor:pointer;transition:.2s}
+aside button.nav:hover{background:rgba(255,255,255,.1)}aside button.nav.on{background:#fff;color:var(--navy)}
+aside button.nav i{width:20px;text-align:center}
+main{padding:28px 32px 50px;min-width:0}
+.page{display:none}.page.on{display:block;animation:fade .35s}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h1{color:var(--navy);font-size:1.7rem}.sub{color:var(--mut);margin-bottom:22px}
+.card{background:#fff;border-radius:16px;box-shadow:var(--sh);padding:20px;border:1px solid #eef2fb}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px;margin-bottom:22px}
+.stat{display:flex;gap:14px;align-items:center}.stat i{width:50px;height:50px;border-radius:14px;display:grid;place-items:center;font-size:1.3rem;background:var(--sky);color:var(--blue)}
+.stat b{font-size:1.6rem;display:block;color:var(--navy);line-height:1.1}.stat span{color:var(--mut);font-size:.88rem}
+.stat.g i{background:#dcfce7;color:#16a34a}.stat.r i{background:#fee2e2;color:#dc2626}.stat.o i{background:#fef3c7;color:#d97706}
+.meter{height:10px;background:var(--line);border-radius:10px;overflow:hidden;margin:8px 0 4px}.meter div{height:100%;background:linear-gradient(90deg,var(--g),var(--o),var(--r));transition:width .6s}
+.zone{margin-top:20px}.zone h3{color:var(--navy);font-size:1rem;margin-bottom:10px;display:flex;justify-content:space-between}
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(68px,1fr));gap:10px}
+.slot{height:62px;border-radius:10px;border:2px solid #86efac;background:#f0fdf4;color:#15803d;font-weight:700;font-size:.85rem;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:.15s}
+.slot i{font-size:1rem;margin-bottom:2px}.slot:hover{transform:translateY(-3px);box-shadow:var(--sh)}
+.slot.occ{border-color:#fca5a5;background:#fef2f2;color:#b91c1c}
+.slot small{font-size:.62rem;font-weight:600;max-width:60px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.legend{display:flex;gap:18px;font-size:.85rem;color:var(--mut);flex-wrap:wrap}.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+label{display:block;font-weight:600;font-size:.9rem}
+input,select{width:100%;margin-top:6px;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;font:inherit;background:#fff;color:var(--ink)}
+input:focus,select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 4px rgba(29,93,240,.15)}
+.err{display:block;color:var(--r);font-size:.8rem;font-weight:500;margin-top:3px}.invalid{border-color:var(--r)!important}
+.form{display:grid;gap:14px;max-width:640px}.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 22px;border:0;border-radius:12px;background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;font:inherit;font-weight:700;cursor:pointer;transition:.2s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(29,93,240,.3)}
+.btn.ghost{background:#fff;color:var(--blue);border:1.5px solid var(--blue)}.btn.danger{background:#fff;color:var(--r);border:1.5px solid var(--r)}
+.btn.sm{padding:7px 14px;font-size:.85rem}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.top input{max-width:280px;margin:0}
+.tbl{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:640px}
+th{text-align:left;font-size:.78rem;text-transform:uppercase;letter-spacing:.5px;color:var(--mut);padding:10px 12px;border-bottom:2px solid var(--line)}
+td{padding:12px;border-bottom:1px solid var(--line);font-size:.93rem}tr:hover td{background:#f8faff}
+.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.78rem;font-weight:700;background:var(--sky);color:var(--blue)}
+.plate{font-weight:800;letter-spacing:1px;background:#fff8d6;border:1.5px solid #e5c200;padding:2px 8px;border-radius:6px;font-size:.88rem}
+.empty{text-align:center;padding:36px;color:var(--mut)}
+.modal{position:fixed;inset:0;background:rgba(10,20,50,.55);display:none;place-items:center;z-index:50;padding:16px;overflow:auto}.modal.open{display:grid}
+.mbox{background:#fff;border-radius:18px;width:100%;max-width:440px;padding:24px;position:relative;animation:fade .25s}
+.mbox h2{color:var(--navy);margin-bottom:12px}.x{position:absolute;right:12px;top:12px;border:0;background:var(--sky);width:34px;height:34px;border-radius:50%;cursor:pointer}
+.row{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:.94rem}.row span{color:var(--mut)}
+.total{display:flex;justify-content:space-between;font-size:1.4rem;font-weight:800;color:var(--navy);padding:14px 0}
+.btns{display:flex;gap:10px;margin-top:8px}.btns .btn{flex:1}
+.toast{position:fixed;bottom:24px;left:50%;transform:translate(-50%,120px);background:var(--navy);color:#fff;padding:13px 22px;border-radius:12px;box-shadow:var(--sh);transition:.35s;z-index:99}.toast.show{transform:translate(-50%,0)}
+.burger{display:none}
+@media(max-width:860px){
+ body{grid-template-columns:1fr}
+ aside{position:fixed;left:-260px;width:240px;z-index:40;transition:.3s}aside.open{left:0}
+ .burger{display:inline-grid;place-items:center;width:42px;height:42px;border:0;border-radius:12px;background:var(--navy);color:#fff;font-size:1.1rem;margin-bottom:14px;cursor:pointer}
+ main{padding:18px 16px 40px}.two{grid-template-columns:1fr}
+}
+@media print{body *{visibility:hidden}#receipt,#receipt *{visibility:visible}#receipt{position:absolute;left:0;top:0;width:100%}.noprint{display:none!important}}
+</style>
+</head>
+<body>
+<aside id="side">
+  <div class="logo"><i class="fa-solid fa-square-parking"></i><span>Harinath<small>Parking Lot Management System</small></span></div>
+  <button class="nav on" data-p="dash"><i class="fa-solid fa-gauge-high"></i>Dashboard</button>
+  <button class="nav" data-p="park"><i class="fa-solid fa-car-side"></i>Park Vehicle</button>
+  <button class="nav" data-p="active"><i class="fa-solid fa-list-check"></i>Active Vehicles</button>
+  <button class="nav" data-p="hist"><i class="fa-solid fa-clock-rotate-left"></i>History</button>
+  <button class="nav" data-p="set"><i class="fa-solid fa-gear"></i>Settings</button>
+  <div class="credit">Developed by <b>Harinath</b></div>
+</aside>
+<main>
+<button class="burger" id="burger" aria-label="Menu"><i class="fa-solid fa-bars"></i></button>
+
+<section class="page on" id="dash">
+  <h1>Dashboard</h1><p class="sub" id="clock"></p>
+  <div class="stats" id="stats"></div>
+  <div class="card"><div class="top" style="margin:0"><b>Lot occupancy</b><div class="legend"><span><i style="background:#86efac"></i>Free</span><span><i style="background:#fca5a5"></i>Occupied</span><span>Click a slot to park or check out</span></div></div>
+    <div class="meter"><div id="meter"></div></div><small class="sub" id="meterTxt"></small><div id="map"></div></div>
+</section>
+
+<section class="page" id="park">
+  <h1>Park a vehicle</h1><p class="sub">Register an arriving vehicle and assign a slot.</p>
+  <form class="card form" id="parkForm" novalidate>
+    <div class="two"><label>Vehicle number<input id="plate" placeholder="e.g. AP21 AB 1234" maxlength="13"><small class="err"></small></label>
+    <label>Vehicle type<select id="vtype"><option value="car">Car</option><option value="bike">Bike</option><option value="truck">Truck</option></select></label></div>
+    <div class="two"><label>Owner name<input id="owner" placeholder="Full name"><small class="err"></small></label>
+    <label>Phone number<input id="phone" type="tel" placeholder="10-digit mobile"><small class="err"></small></label></div>
+    <label>Slot<select id="slotSel"></select><small class="err"></small></label>
+    <p class="sub" id="rateHint" style="margin:0"></p>
+    <button class="btn" type="submit"><i class="fa-solid fa-ticket"></i> Issue parking ticket</button>
+  </form>
+</section>
+
+<section class="page" id="active">
+  <h1>Active vehicles</h1><p class="sub">Vehicles currently parked in the lot.</p>
+  <div class="top"><input id="qActive" placeholder="Search number, owner or slot…"></div>
+  <div class="card tbl" id="activeTbl"></div>
+</section>
+
+<section class="page" id="hist">
+  <h1>History</h1><p class="sub" id="histSub"></p>
+  <div class="top"><input id="qHist" placeholder="Search number, owner or ticket…"><button class="btn ghost" id="csv"><i class="fa-solid fa-file-csv"></i> Export CSV</button></div>
+  <div class="card tbl" id="histTbl"></div>
+</section>
+
+<section class="page" id="set">
+  <h1>Settings</h1><p class="sub">Hourly rates (charged per started hour, minimum 1 hour).</p>
+  <form class="card form" id="rateForm" novalidate>
+    <div class="two"><label>Car (₹/hour)<input id="rCar" type="number" min="1"></label><label>Bike (₹/hour)<input id="rBike" type="number" min="1"></label></div>
+    <label>Truck (₹/hour)<input id="rTruck" type="number" min="1"></label><small class="err" id="rErr"></small>
+    <div class="btns"><button class="btn" type="submit"><i class="fa-solid fa-floppy-disk"></i> Save rates</button>
+    <button class="btn danger" type="button" id="reset"><i class="fa-solid fa-trash"></i> Reset demo data</button></div>
+  </form>
+</section>
+</main>
+
+<div class="modal" id="modal"><div class="mbox"><button class="x" id="mx" aria-label="Close"><i class="fa-solid fa-xmark"></i></button><div id="mbody"></div></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money=n=>'₹'+Math.round(n).toLocaleString('en-IN');
+const ICON={car:'fa-car',bike:'fa-motorcycle',truck:'fa-truck'};
+const ZONES=[['car','Car zone','A',20],['bike','Bike zone','B',12],['truck','Truck zone','T',6]];
+const SLOTS=ZONES.flatMap(([t,,p,n])=>Array.from({length:n},(_,i)=>({id:p+(i+1),type:t})));
+const KEY='parkwiseV1';
+let D=load();
+function load(){try{const d=JSON.parse(localStorage.getItem(KEY));if(d&&d.tickets)return d}catch{}
+ const now=Date.now(),h=3600e3,mk=(p,t,o,ph,s,ago)=>({id:'PW'+(1000+Math.floor(Math.random()*9000)),plate:p,type:t,owner:o,phone:ph,slot:s,inAt:now-ago*h,status:'active'});
+ const d={rates:{car:40,bike:20,truck:80},tickets:[mk('AP21 AB 1234','car','Ravi Kumar','9876543210','A3',2.4),mk('KA05 MN 4821','car','Sneha Rao','9123456780','A7',0.6),mk('AP39 XY 9087','bike','Imran Khan','9988776655','B2',4.2),mk('TS09 TR 5566','truck','Lakshmi Transport','9012345678','T1',5.1)]};
+ localStorage.setItem(KEY,JSON.stringify(d));return d}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(D))}catch{}};
+const act=()=>D.tickets.filter(t=>t.status==='active');
+const done=()=>D.tickets.filter(t=>t.status==='done');
+const fee=(t,end=Date.now())=>Math.max(1,Math.ceil((end-t.inAt)/36e5))*D.rates[t.type];
+const dur=(a,b=Date.now())=>{const m=Math.max(1,Math.round((b-a)/6e4));return m>=60?`${Math.floor(m/60)}h ${m%60}m`:`${m}m`};
+const fdt=ts=>new Date(ts).toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('show'),2600)};
+
+/* nav */
+function show(p){$$('.page').forEach(x=>x.classList.toggle('on',x.id===p));$$('.nav').forEach(b=>b.classList.toggle('on',b.dataset.p===p));$('#side').classList.remove('open');render();scrollTo({top:0})}
+$$('.nav').forEach(b=>b.onclick=()=>show(b.dataset.p));
+$('#burger').onclick=()=>$('#side').classList.toggle('open');
+
+/* render */
+function render(){renderDash();renderParkOpts();renderActive();renderHist();
+ $('#rCar').value=D.rates.car;$('#rBike').value=D.rates.bike;$('#rTruck').value=D.rates.truck}
+function renderDash(){
+ const a=act(),d=done(),today=new Date().toDateString(),rev=d.filter(t=>new Date(t.outAt).toDateString()===today).reduce((s,t)=>s+t.fee,0);
+ const pct=Math.round(a.length/SLOTS.length*100);
+ $('#clock').textContent=new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+ $('#stats').innerHTML=[['fa-square-parking','',SLOTS.length,'Total slots'],['fa-circle-check','g',SLOTS.length-a.length,'Available'],['fa-car-side','r',a.length,'Occupied'],['fa-indian-rupee-sign','o',money(rev),"Today's revenue"]]
+  .map(([i,c,v,l])=>`<div class="card stat ${c}"><i class="fa-solid ${i}"></i><div><b>${v}</b><span>${l}</span></div></div>`).join('');
+ $('#meter').style.width=pct+'%';$('#meterTxt').textContent=`${pct}% full • ${a.length} of ${SLOTS.length} slots in use`;
+ $('#map').innerHTML=ZONES.map(([t,name])=>{const s=SLOTS.filter(x=>x.type===t),u=s.filter(x=>a.some(k=>k.slot===x.id)).length;
+  return `<div class="zone"><h3><span><i class="fa-solid ${ICON[t]}"></i> ${name} (${money(D.rates[t])}/hr)</span><span class="muted">${u}/${s.length}</span></h3><div class="slots">`+
+  s.map(x=>{const k=a.find(k=>k.slot===x.id);return `<button class="slot ${k?'occ':''}" data-s="${x.id}" title="${k?esc(k.plate):'Free'}"><i class="fa-solid ${ICON[t]}"></i>${x.id}${k?`<small>${esc(k.plate)}</small>`:''}</button>`}).join('')+`</div></div>`}).join('');
+ $$('.slot').forEach(b=>b.onclick=()=>{const k=act().find(k=>k.slot===b.dataset.s);if(k)openCheckout(k.id);else{const s=SLOTS.find(x=>x.id===b.dataset.s);show('park');$('#vtype').value=s.type;renderParkOpts();$('#slotSel').value=s.id}})}
+function renderParkOpts(){
+ const t=$('#vtype').value,cur=$('#slotSel').value,used=new Set(act().map(k=>k.slot));
+ const free=SLOTS.filter(s=>s.type===t&&!used.has(s.id));
+ $('#slotSel').innerHTML=free.length?`<option value="">Auto-assign first free slot</option>`+free.map(s=>`<option>${s.id}</option>`).join(''):`<option value="">No free ${t} slots</option>`;
+ if(free.some(s=>s.id===cur))$('#slotSel').value=cur;
+ $('#rateHint').textContent=`Rate: ${money(D.rates[t])} per hour • ${free.length} free ${t} slot${free.length===1?'':'s'}`}
+$('#vtype').onchange=renderParkOpts;
+function renderActive(){
+ const q=$('#qActive').value.trim().toLowerCase(),L=act().filter(t=>!q||[t.plate,t.owner,t.slot,t.id].some(v=>v.toLowerCase().includes(q))).sort((a,b)=>b.inAt-a.inAt);
+ $('#activeTbl').innerHTML=L.length?`<table><tr><th>Ticket</th><th>Vehicle</th><th>Owner</th><th>Slot</th><th>Entry</th><th>Duration</th><th>Fee so far</th><th></th></tr>`+
+  L.map(t=>`<tr><td>${t.id}</td><td><span class="plate">${esc(t.plate)}</span> <i class="fa-solid ${ICON[t.type]}" style="color:var(--blue)"></i></td><td>${esc(t.owner)}<br><small class="sub">${esc(t.phone)}</small></td><td><span class="tag">${t.slot}</span></td><td>${fdt(t.inAt)}</td><td>${dur(t.inAt)}</td><td><b>${money(fee(t))}</b></td><td><button class="btn sm" data-o="${t.id}">Check out</button></td></tr>`).join('')+`</table>`
+  :`<div class="empty"><i class="fa-solid fa-square-parking fa-2x"></i><p>${q?'No matching vehicles.':'No vehicles parked right now.'}</p></div>`;
+ $$('[data-o]').forEach(b=>b.onclick=()=>openCheckout(b.dataset.o))}
+function renderHist(){
+ const q=$('#qHist').value.trim().toLowerCase(),all=done().sort((a,b)=>b.outAt-a.outAt),L=all.filter(t=>!q||[t.plate,t.owner,t.id].some(v=>v.toLowerCase().includes(q)));
+ $('#histSub').textContent=`${all.length} completed • total revenue ${money(all.reduce((s,t)=>s+t.fee,0))}`;
+ $('#histTbl').innerHTML=L.length?`<table><tr><th>Ticket</th><th>Vehicle</th><th>Owner</th><th>Slot</th><th>Entry</th><th>Exit</th><th>Duration</th><th>Paid</th></tr>`+
+  L.map(t=>`<tr><td>${t.id}</td><td><span class="plate">${esc(t.plate)}</span></td><td>${esc(t.owner)}</td><td>${t.slot}</td><td>${fdt(t.inAt)}</td><td>${fdt(t.outAt)}</td><td>${dur(t.inAt,t.outAt)}</td><td><b>${money(t.fee)}</b></td></tr>`).join('')+`</table>`
+  :`<div class="empty"><i class="fa-solid fa-clock-rotate-left fa-2x"></i><p>No completed parkings yet.</p></div>`}
+$('#qActive').oninput=renderActive;$('#qHist').oninput=renderHist;
+
+/* park form */
+const setErr=(el,m)=>{el.classList.toggle('invalid',!!m);const e=el.parentElement.querySelector('.err');if(e)e.textContent=m||'';return !m};
+$('#parkForm').onsubmit=e=>{e.preventDefault();
+ const p=$('#plate'),o=$('#owner'),ph=$('#phone'),t=$('#vtype').value,sl=$('#slotSel');
+ const plate=p.value.trim().toUpperCase().replace(/\s+/g,' ');
+ const r=[setErr(p,!plate?'Vehicle number is required':!/^[A-Z0-9 -]{4,13}$/.test(plate)?'Use 4–13 letters/digits':act().some(k=>k.plate.replace(/\W/g,'')===plate.replace(/\W/g,''))?'This vehicle is already parked':''),
+  setErr(o,!o.value.trim()?'Owner name is required':!/^[A-Za-z][A-Za-z .'-]+$/.test(o.value.trim())?'Use letters only':''),
+  setErr(ph,!ph.value.trim()?'Phone is required':!/^[6-9]\d{9}$/.test(ph.value.trim())?'Enter a valid 10-digit mobile number':'')];
+ const used=new Set(act().map(k=>k.slot)),free=SLOTS.filter(s=>s.type===t&&!used.has(s.id));
+ const slot=sl.value||(free[0]&&free[0].id);
+ r.push(setErr(sl,slot?'':`No free ${t} slots available`));
+ if(r.includes(false))return;
+ const tk={id:'PW'+Date.now().toString().slice(-6),plate,type:t,owner:o.value.trim(),phone:ph.value.trim(),slot,inAt:Date.now(),status:'active'};
+ D.tickets.push(tk);save();e.target.reset();render();
+ toast(`Ticket ${tk.id} issued – slot ${slot}`);show('active')};
+
+/* checkout */
+function row(l,v){return `<div class="row"><span>${l}</span><b>${v}</b></div>`}
+function openCheckout(id){const t=D.tickets.find(k=>k.id===id);if(!t)return;
+ $('#mbody').innerHTML=`<h2>Check out vehicle</h2>${row('Ticket',t.id)}${row('Vehicle',`<span class="plate">${esc(t.plate)}</span>`)}${row('Owner',esc(t.owner))}${row('Slot',t.slot)}${row('Entry',fdt(t.inAt))}${row('Duration',dur(t.inAt))}${row('Rate',money(D.rates[t.type])+'/hr')}
+ <div class="total"><span>Amount due</span><span>${money(fee(t))}</span></div>
+ <div class="btns"><button class="btn ghost" id="cn">Cancel</button><button class="btn" id="cf"><i class="fa-solid fa-indian-rupee-sign"></i> Collect &amp; check out</button></div>`;
+ $('#modal').classList.add('open');$('#cn').onclick=close;
+ $('#cf').onclick=()=>{t.outAt=Date.now();t.fee=fee(t,t.outAt);t.status='done';save();render();receipt(t)}}
+function receipt(t){
+ $('#mbody').innerHTML=`<div id="receipt"><h2><i class="fa-solid fa-square-parking"></i> Harinath Parking Lot – Receipt</h2>${row('Ticket',t.id)}${row('Vehicle',esc(t.plate))}${row('Owner',esc(t.owner))}${row('Slot',t.slot)}${row('Entry',fdt(t.inAt))}${row('Exit',fdt(t.outAt))}${row('Duration',dur(t.inAt,t.outAt))}
+ <div class="total"><span>Paid</span><span>${money(t.fee)}</span></div><p class="sub">Thank you. Drive safe!</p></div>
+ <div class="btns noprint"><button class="btn ghost" id="cl">Close</button><button class="btn" onclick="window.print()"><i class="fa-solid fa-print"></i> Print</button></div>`;
+ $('#cl').onclick=close;toast('Vehicle checked out')}
+function close(){$('#modal').classList.remove('open')}
+$('#mx').onclick=close;$('#modal').onclick=e=>e.target.id==='modal'&&close();addEventListener('keydown',e=>e.key==='Escape'&&close());
+
+/* history csv, settings */
+$('#csv').onclick=()=>{const L=done();if(!L.length)return toast('Nothing to export yet');
+ const c=v=>`"${String(v).replace(/"/g,'""')}"`,rows=[['Ticket','Vehicle','Type','Owner','Phone','Slot','Entry','Exit','Fee'],...L.map(t=>[t.id,t.plate,t.type,t.owner,t.phone,t.slot,new Date(t.inAt).toISOString(),new Date(t.outAt).toISOString(),t.fee])];
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([rows.map(r=>r.map(c).join(',')).join('\n')],{type:'text/csv'}));a.download='parking-history.csv';a.click()};
+$('#rateForm').onsubmit=e=>{e.preventDefault();const v=['#rCar','#rBike','#rTruck'].map(s=>+$(s).value);
+ if(v.some(n=>!(n>=1)))return $('#rErr').textContent='Enter a rate of at least ₹1 for every vehicle type';
+ $('#rErr').textContent='';D.rates={car:v[0],bike:v[1],truck:v[2]};save();render();toast('Rates updated')};
+$('#reset').onclick=()=>{if(!confirm('Reset all parking data to the demo state?'))return;localStorage.removeItem(KEY);D=load();render();toast('Demo data restored')};
+setInterval(()=>{renderActive();renderDash()},30000);
+render();
+</script>
+</body>
+</html>
